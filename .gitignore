@@ -1,0 +1,6 @@
+# config | env var
+config.py
+.env
+
+# service
+tasks.txt
