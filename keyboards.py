@@ -25,7 +25,7 @@ main_kb = ReplyKeyboardMarkup(
 inline_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text="Подписаться", callback_data="follow")
+            InlineKeyboardButton(text="Подписаться", callback_data="subscribe")
         ]
     ]
 )
