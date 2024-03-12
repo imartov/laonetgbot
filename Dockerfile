@@ -10,4 +10,4 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "app.py"]
+CMD ["sh", "-c", "python app.py && celery -A celery_app beat -l info && celery -A celery_config worker -l info --concurrency=1 -P solo"]
