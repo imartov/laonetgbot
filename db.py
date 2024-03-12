@@ -18,7 +18,8 @@ load_dotenv()
 
 # TODO: использовать .env вместо config
 # engine = create_engine(f'postgresql+psycopg2://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOSTNAME")}/{os.getenv("DB_NAME")}')
-engine = create_engine(f'postgresql+psycopg2://laoneuser:laonepassword@localhost:5432/laonedb')
+# engine = create_engine(f'postgresql+psycopg2://laoneuser:laonepassword@localhost:5432/laonedb')
+engine = create_engine(f'postgresql+psycopg2://laoneuser:laonepassword@db:5432/laonedb')
 metadata_obj = MetaData()
 
 product_requests = Table(

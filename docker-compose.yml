@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - rabbitmq
+      - celery
+    networks:
+      - laonenetwork
+
+  db:
+    image: postgres
+    restart: 'always'
+    container_name: db
+    networks:
+      - laonenetwork
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: laonedb
+      POSTGRES_USER: laoneuser
+      POSTGRES_PASSWORD: laonepassword
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  celery:
+    build: .
+    command: celery -A celery_app worker --loglevel=info && celery -A celery_app worker -l info --concurrency=1 -P solo
+    depends_on:
+      - web
+
+  flower:
+    build: .
+    command: celery -A celery_app flower
+    ports:
+      - "5555:5555"
+    depends_on:
+      - web
+
+networks:
+  laonenetwork:
+      driver: bridge
