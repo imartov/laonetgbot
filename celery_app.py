@@ -1,22 +1,15 @@
+import os
 from celery import Celery
-from service import service_send_info
 import asyncio
-from functools import wraps
-from app import service_send_info
+from dotenv import load_dotenv
+from project.handlers.private import service_send_info
 
+load_dotenv()
 
-# app = Celery('celery_app', broker='pyamqp://guest@localhost//')
-app = Celery('celery_app', broker='pyamqp://guest@rabbit//') # Docker
-
-# app = Celery('celery_app', 'amqp://laoneuser:laonepassword@localhost:5672//')
-
-# app = Celery('celery_app', broker='redis://localhost:6379/1')
-# app = Celery('celery_app', broker='redis://redis:6379/0') # Docker
-# app = Celery('celery_app', 'amqp://guest@localhost//')
+app = Celery('celery_app', broker=f'pyamqp://{os.getenv("RABBIT_USER")}@{os.getenv("RABBIT_HOST")}//')
 
 app.conf.timezone = 'UTC'
 app.control.purge()
-
 
 @app.task
 def periodic_send_info():

@@ -1,26 +1,19 @@
  
 import os
-from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Column
 from sqlalchemy import Table
 import sqlalchemy as db
-import config
 from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy import delete
-from datetime import timedelta
-import pytz
 from sqlalchemy import desc
 
 load_dotenv()
 
-# TODO: использовать .env вместо config
-# engine = create_engine(f'postgresql+psycopg2://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOSTNAME")}/{os.getenv("DB_NAME")}')
-
-# engine = create_engine(f'postgresql+psycopg2://laoneuser:laonepassword@localhost:5432/laonedb')
-engine = create_engine(f'postgresql+psycopg2://laoneuser:laonepassword@postgres:5432/laonedb') # Docker
+url_db = f'postgresql+psycopg2://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
+engine = create_engine(url_db)
 
 metadata_obj = MetaData()
 
