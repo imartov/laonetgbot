@@ -4,6 +4,8 @@ services:
 
   postgres:
     image: postgres:latest
+    container_name: postgres
+    hostname: postgres
     restart: always
     environment:
       POSTGRES_DB: laonedb
@@ -14,58 +16,84 @@ services:
     networks:
       - dem
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: alexandr.kosyrew@mail.ru
-      PGADMIN_DEFAULT_PASSWORD: laonepassword
-      PGADMIN_LISTEN_PORT: 80
-    ports:
-      - "5000:80"
-    depends_on:
-      - postgres
-    networks:
-      - dem
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: alexandr.kosyrew@mail.ru
+  #     PGADMIN_DEFAULT_PASSWORD: laonepassword
+  #     PGADMIN_LISTEN_PORT: 80
+  #   ports:
+  #     - "5000:80"
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - dem
 
   app:
-    restart: unless-stopped
+    restart: always
+    container_name: app
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
       - postgres
+      - rabbit
     networks:
       - dem
 
-  celery:
+  celery-worker:
     build: .
-    command:
-      - celery -A celery_app beat -l info
-      - celery -A celery_config worker -l info --concurrency=1 -P solo
+    container_name: celery-worker
+    command: celery -A celery_app worker -l info --concurrency=1 -P solo
+    restart: always
     depends_on:
-      - app
+      - rabbit
+      - postgres
     networks:
       - dem
+    links:
+      - rabbit
 
-  rabbitmq:
-    image: "rabbitmq:3-management"
+  celery-beat:
+    build: .
+    container_name: celery-beat
+    command: celery -A celery_app beat -l info
+    restart: always
+    depends_on:
+      - rabbit
+      - postgres
+    networks:
+      - dem
+    links:
+      - rabbit
+
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: rabbit
+    hostname: rabbit
+    # environment:
+    #   - RABBITMQ_DEFAULT_USER=admin
+    #   - RABBITMQ_DEFAULT_PASS=admin
+    #   - RABBITMQ_DEFAULT_VHOST=/
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "5682:5672"
+      - "15682:15672"
     networks:
       - dem
-    depends_on:
-      - app
 
-  flower:
+  celery-flower:
     build: .
+    container_name: celery-flower
     command: celery -A celery_app flower
+    restart: always
     ports:
       - "5555:5555"
     depends_on:
-      - app
-      - celery
+      - rabbit
+      - postgres
+    networks:
+      - dem
 
 networks:
   dem:
