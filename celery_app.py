@@ -2,7 +2,7 @@ import os
 from celery import Celery
 import asyncio
 from dotenv import load_dotenv
-from project.handlers.private import service_send_info
+from sendmes.productinfo import service_send_info
 
 load_dotenv()
 

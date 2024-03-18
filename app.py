@@ -12,13 +12,13 @@ from aiogram import Bot, Dispatcher, types
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv())
 
-from project.handlers.private import user_router
+from handlers.private import user_router
 from common.bot_cmds_list import private
 
 
 bot = Bot(os.getenv("TG_TOKEN"))
 
-dp = Dispatcher()
+dp = Dispatcher() # по умолчанию используется хранилище оперативной памяти для хранения состояний
 dp.include_router(user_router)
 
 async def main() -> None:

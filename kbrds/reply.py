@@ -14,7 +14,6 @@ main_kb = ReplyKeyboardMarkup(
         ],
     ],
     resize_keyboard=True, # уменьшение размера кнопок
-    # one_time_keyboard=True, # сокрытие клавиатуры после первого использования
     input_field_placeholder="Выберете действие из меню", # отображается сообщение
     selective=True # клавиатура активируется у того, кто ее вызвал, если будет False - будет видна у всех пользователей
 )

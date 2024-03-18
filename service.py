@@ -29,8 +29,24 @@ def get_product_info(vend_code:int) -> OrderedDict:
 
 # функция если артикул неверный, отсутсвтует в WB
 
+def get_info_from_message(message: str, key_words: list) -> dict:
+    result_dict = {}
+    list_line = message.split("\n")
+    for key_word in key_words:
+        for line in list_line:
+            if key_word in line:
+                start_index = len(key_word) + 3
+                find_value = line[start_index:]
+                result_dict[key_word] = find_value.strip()
+    print(result_dict)
+    return result_dict
+
+
 def main() -> None:
-    print(get_product_info(ven_code=120772856))
+    with open("test.txt", "r", encoding="utf-8") as file:
+        message = file.read()
+    key_words = ["Артикул", "Название"]
+    get_info_from_message(message=message, key_words=key_words)
 
 if __name__ == "__main__":
     main()

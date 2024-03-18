@@ -1,0 +1,5 @@
+Название - {product_name}
+Артикул - {vend_code}
+Цена - {price}
+Рейтинг - {rating}
+Количество товара на всех складах - {products_count}
