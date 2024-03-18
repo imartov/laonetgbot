@@ -15,8 +15,7 @@ load_dotenv(find_dotenv())
 
 from kbrds.inline import inline_kb
 from kbrds.reply import main_kb
-from service import get_product_info
-from service import get_info_from_message
+from service import check_vend_code, get_info_from_message
 import db
 from sendmes.productinfo import send_subscribe_info
 
@@ -47,11 +46,16 @@ async def get_product_info_reply(message: Message) -> None:
     await message.answer(text=text, reply_markup=types.ReplyKeyboardRemove())
 
 
-@user_router.message(F.text.isdigit())
+@user_router.message(F.text.strp().isdigit())
 async def get_product_info_reply(message: Message) -> None:
     vend_code = ''.join(x for x in message.text if x.isdigit())
     # TODO: asyncio
-    info = get_product_info(vend_code=vend_code)
+    info = check_vend_code(vend_code=vend_code)
+    if not info:
+        with open('messages//error_vend_code.txt', "r", encoding="utf-8") as file:
+            text = file.read()
+        await message.answer(text=text)
+        return
     with open('messages//give_product_info.txt', "r", encoding="utf-8") as file:
         text = file.read().format(**info)
     await message.answer(text=text, reply_markup=inline_kb)
@@ -102,3 +106,10 @@ async def process_button(callback: types.CallbackQuery):
         "vend_code": product_info["Артикул"]
     }
     db.insert_data(insert_data=insert_data, table_name=db.subscribe_products)
+
+
+@user_router.message()
+async def error_command(message: Message) -> None:
+    with open('messages//error_command.txt', "r", encoding="utf-8") as file:
+        text = file.read()
+    await message.answer(text=text, reply_markup=main_kb)

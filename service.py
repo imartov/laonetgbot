@@ -27,6 +27,13 @@ def get_product_info(vend_code:int) -> OrderedDict:
     }
     return info
 
+def check_vend_code(vend_code: int) -> any:
+    try:
+        info = get_product_info(vend_code=vend_code)
+    except IndexError:
+        info = False
+    return info
+
 # функция если артикул неверный, отсутсвтует в WB
 
 def get_info_from_message(message: str, key_words: list) -> dict:
@@ -43,10 +50,12 @@ def get_info_from_message(message: str, key_words: list) -> dict:
 
 
 def main() -> None:
-    with open("test.txt", "r", encoding="utf-8") as file:
-        message = file.read()
-    key_words = ["Артикул", "Название"]
-    get_info_from_message(message=message, key_words=key_words)
+    # with open("test.txt", "r", encoding="utf-8") as file:
+    #     message = file.read()
+    # key_words = ["Артикул", "Название"]
+    # get_info_from_message(message=message, key_words=key_words)
+
+    info = get_product_info(vend_code=123)
 
 if __name__ == "__main__":
     main()
