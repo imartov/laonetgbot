@@ -1,3 +1,7 @@
+'''
+This module contains inline buttons
+'''
+
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 

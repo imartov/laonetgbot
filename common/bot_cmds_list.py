@@ -1,3 +1,7 @@
+'''
+This module contains commands for the menu
+'''
+
 from aiogram.types import BotCommand
 
 

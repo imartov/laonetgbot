@@ -1,14 +1,18 @@
- 
+'''
+This module contains connection configurations,
+database object classes, and methods for interacting with it
+'''
+
 import os
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Column
 from sqlalchemy import Table
 import sqlalchemy as db
-from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy import delete
-from sqlalchemy import desc
+from sqlalchemy import UniqueConstraint
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -31,40 +35,39 @@ subscribe_products = Table(
     metadata_obj,
     Column("id", db.Integer, primary_key=True, autoincrement=True),
     Column("chat_id", db.Integer),
-    Column("vend_code", db.Integer)
-    # TODO: связанный ключ chat_id и vend_code
+    Column("vend_code", db.Integer),
+    UniqueConstraint("chat_id", "vend_code", name="uniq_product"),
 )
 
 metadata_obj.create_all(engine)
 
-# TODO: asyncio
-def insert_data(insert_data: dict, table_name: Table | None = product_requests) -> None:
+
+async def insert_data(data: dict,
+                      table_name: Table | None = product_requests) -> None:
+    ''' This method inserts data into the database '''
     with engine.connect() as connection:
-        connection.execute(table_name.insert(), insert_data)
+        connection.execute(table_name.insert(), data)
         connection.commit()
 
-# TODO: asyncio
-def select_data(table_name: Table, *args) -> list:
+
+async def select_data(table_name: Table, *args) -> list:
+    ''' This method extracts data from the database '''
     with engine.connect() as connection:
         stmt = select(table_name.c[*args])
         result = list(connection.execute(stmt))
+        # result = connection.execute(stmt)
     return result
 
-# TODO: asyncio
-def delete_subscribe(chat_id: int) -> None:
+
+async def delete_subscribe(chat_id: int) -> None:
+    ''' This method removes data from the 'subscribe_products' table
+        and describes the user from subscribed products '''
     with engine.connect() as connection:
         stmt = delete(subscribe_products).where(subscribe_products.c.chat_id == chat_id)
         connection.execute(stmt)
         connection.commit()
 
-def main() -> None:
-    with engine.connect() as connection:
-        stmt = select(product_requests).where(product_requests.c.user_id==640814744)\
-            .order_by(desc(product_requests.c.request_data))\
-            .limit(5)
-        last_fivet_minutes_rows = list(connection.execute(stmt))
-    print(last_fivet_minutes_rows)
-
 
 if __name__ == "__main__":
-    main()
+    pass
+    
